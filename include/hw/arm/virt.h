@@ -137,6 +137,7 @@ struct VirtMachineState {
     DeviceState *platform_bus_dev;
     FWCfgState *fw_cfg;
     PFlashCFI01 *flash[2];
+    MemoryRegion *secure_sysmem;
     bool secure;
     bool highmem;
     bool highmem_ecam;
@@ -155,6 +156,7 @@ struct VirtMachineState {
     char *pciehb_nodename;
     const int *irqmap;
     int fdt_size;
+    int max_cpus;
     uint32_t clock_phandle;
     uint32_t gic_phandle;
     uint32_t msi_phandle;

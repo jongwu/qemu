@@ -894,7 +894,10 @@ static gchar *aarch64_gdb_arch_name(CPUState *cs)
 static void aarch64_cpu_class_init(ObjectClass *oc, void *data)
 {
     CPUClass *cc = CPU_CLASS(oc);
+    DeviceClass *dc = DEVICE_CLASS(oc);
+    CPUState *cs = CPU(oc);
 
+    dc->user_creatable = true;
     cc->gdb_read_register = aarch64_cpu_gdb_read_register;
     cc->gdb_write_register = aarch64_cpu_gdb_write_register;
     cc->gdb_num_core_regs = 34;
@@ -906,6 +909,11 @@ static void aarch64_cpu_class_init(ObjectClass *oc, void *data)
     object_class_property_set_description(oc, "aarch64",
                                           "Set on/off to enable/disable aarch64 "
                                           "execution state ");
+    /*
+     * we start every ARM64 vcpu as disabled possible vcpu. It needs to be
+     * enabled explicitly
+     */
+    cs->disabled = true;
 }
 
 static void aarch64_cpu_instance_init(Object *obj)
