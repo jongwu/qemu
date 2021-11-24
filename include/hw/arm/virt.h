@@ -144,6 +144,7 @@ struct VirtMachineState {
     bool its;
     bool virt;
     bool ras;
+    bool pmu;
     bool mte;
     OnOffAuto acpi;
     VirtGICType gic_version;
