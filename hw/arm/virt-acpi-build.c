@@ -563,6 +563,22 @@ build_gtdt(GArray *table_data, BIOSLinker *linker, VirtMachineState *vms)
                  vms->oem_table_id);
 }
 
+static void
+build_mat_entry(AcpiDeviceIf *adev, int uid, const CPUArchIdList *arch_ids,
+                    GArray *entry)
+{
+    AcpiMadtGenericCpuInterface *gicc = acpi_data_push(entry,sizeof(*gicc));
+    MachineState *ms = MACHINE(qdev_get_machine());
+    CPUArchIdList *possible_cpus = ms->possible_cpus;
+
+    /* fill the relevant fields of _MAT entry for GICC */
+    gicc->type = ACPI_APIC_GENERIC_CPU_INTERFACE;
+    gicc->length = sizeof(*gicc);
+    gicc->cpu_interface_number = cpu_to_le32(uid);
+    gicc->arm_mpidr = possible_cpus->cpus[uid].arch_id;
+    gicc->uid = cpu_to_le32(uid);
+}
+
 /* MADT */
 static void
 build_madt(GArray *table_data, BIOSLinker *linker, VirtMachineState *vms)
@@ -713,8 +729,13 @@ build_dsdt(GArray *table_data, BIOSLinker *linker, VirtMachineState *vms)
              .acpi_1_compatible = false,
              .has_legacy_cphp = false
         };
-
-        build_cpus_aml(scope, ms, opts, memmap[VIRT_CPUHP_ACPI].base,
+        
+	AcpiDeviceIfClass *adevc;
+        /* _MAT entry shall be used within cpus aml */
+        adevc = ACPI_DEVICE_IF_CLASS(DEVICE_GET_CLASS(vms->acpi_dev));
+        adevc->madt_cpu = build_mat_entry;
+        
+	build_cpus_aml(scope, ms, opts, memmap[VIRT_CPUHP_ACPI].base,
                        "\\_SB", NULL, AML_SYSTEM_MEMORY);
     } else {
         acpi_dsdt_add_cpus(scope, vms);
