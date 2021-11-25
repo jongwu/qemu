@@ -25,6 +25,7 @@ static const uint32_t ged_supported_events[] = {
     ACPI_GED_MEM_HOTPLUG_EVT,
     ACPI_GED_PWR_DOWN_EVT,
     ACPI_GED_NVDIMM_HOTPLUG_EVT,
+    ACPI_GED_CPU_HOTPLUG_EVT,
 };
 
 /*
@@ -389,6 +390,13 @@ static void acpi_ged_initfn(Object *obj)
      sysbus_init_mmio(sbd, &s->container_memhp);
      acpi_memory_hotplug_init(&s->container_memhp, OBJECT(dev),
                               &s->memhp_state, 0);
+
+     s->cpuhp.device = OBJECT(s);
+     memory_region_init(&s->container_cpuhp, OBJECT(dev), "cpuhp container",
+                        ACPI_CPU_HOTPLUG_REG_LEN);
+     sysbus_init_mmio(SYS_BUS_DEVICE(dev), &s->container_cpuhp);
+     cpu_hotplug_hw_init(&s->container_cpuhp, OBJECT(dev),
+                         &s->cpuhp_state, 0);
 
     memory_region_init_io(&ged_st->regs, obj, &ged_regs_ops, ged_st,
                           TYPE_ACPI_GED "-regs", ACPI_GED_REG_COUNT);

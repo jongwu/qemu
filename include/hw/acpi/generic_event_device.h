@@ -63,6 +63,7 @@
 #include "hw/acpi/memory_hotplug.h"
 #include "hw/acpi/ghes.h"
 #include "qom/object.h"
+#include "hw/acpi/cpu_hotplug.h"
 
 #define ACPI_POWER_BUTTON_DEVICE "PWRB"
 
@@ -75,6 +76,7 @@ OBJECT_DECLARE_SIMPLE_TYPE(AcpiGedState, ACPI_GED)
 
 #define ACPI_GED_EVT_SEL_OFFSET    0x0
 #define ACPI_GED_EVT_SEL_LEN       0x4
+#define ACPI_GED_CPU_HOTPLUG_EVT    0x8
 
 #define ACPI_GED_REG_SLEEP_CTL     0x00
 #define ACPI_GED_REG_SLEEP_STS     0x01
@@ -110,6 +112,9 @@ struct AcpiGedState {
     SysBusDevice parent_obj;
     MemHotplugState memhp_state;
     MemoryRegion container_memhp;
+    CPUHotplugState cpuhp_state;
+    MemoryRegion container_cpuhp;
+    AcpiCpuHotplug cpuhp;
     GEDState ged_state;
     uint32_t ged_event_bitmap;
     qemu_irq irq;
