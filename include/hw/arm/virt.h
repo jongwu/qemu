@@ -160,6 +160,7 @@ struct VirtMachineState {
     const int *irqmap;
     int fdt_size;
     int max_cpus;
+    uint16_t boot_cpus;
     uint32_t clock_phandle;
     uint32_t gic_phandle;
     uint32_t msi_phandle;
