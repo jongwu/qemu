@@ -330,6 +330,7 @@ static void arm_gicv3_cpu_update_notifier(Notifier * notifier, void * data)
     VirtMachineState *vms = VIRT_MACHINE(qdev_get_machine());
     GICv3State *s = ARM_GICV3_COMMON(vms->gic);
     CPUState *cpu = (CPUState *)data;
+    ARMGICv3CommonClass *c = ARM_GICV3_COMMON_GET_CLASS(s);
     int gic_cpuif_num;
 
     /* this shall get us mapped gicv3 cpuif corresponding to mpidr */
@@ -349,8 +350,10 @@ static void arm_gicv3_cpu_update_notifier(Notifier * notifier, void * data)
     /* re-stitch the gic cpuif to this new cpu */
     gicv3_set_gicv3state(cpu, &s->cpu[gic_cpuif_num]);
     gicv3_set_cpustate(&s->cpu[gic_cpuif_num], cpu);
-
-    /* TODO: initialize the registers info for this newly added cpu */
+    /* initialize the registers info for this newly added cpu */
+    if (c->init_cpu_reginfo) {
+        c->init_cpu_reginfo(cpu);
+    }
 }
 
 static void arm_gicv3_common_realize(DeviceState *dev, Error **errp)
