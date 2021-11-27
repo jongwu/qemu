@@ -344,6 +344,7 @@ struct CPUState {
     QSIMPLEQ_HEAD(, qemu_work_item) work_list;
 
     CPUAddressSpace *cpu_ases;
+    int cpu_ases_ref_count;
     int num_ases;
     AddressSpace *as;
     MemoryRegion *memory;
@@ -376,6 +377,7 @@ struct CPUState {
     int kvm_fd;
     struct KVMState *kvm_state;
     struct kvm_run *kvm_run;
+    VMChangeStateEntry *vmcse;
     struct kvm_dirty_gfn *kvm_dirty_gfns;
     uint32_t kvm_fetch_index;
 

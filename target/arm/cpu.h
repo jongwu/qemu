@@ -1144,6 +1144,13 @@ void arm_pmu_timer_cb(void *opaque);
  * Functions to register as EL change hooks for PMU mode filtering
  */
 void pmu_pre_el_change(ARMCPU *cpu, void *ignored);
+
+/**
+ * arm_unregister_pre_el_change_hook:
+ * unregister all pre EL change hook functions. Generally called during
+ * unrealize'ing leg
+ */
+void arm_unregister_pre_el_change_hooks(ARMCPU *cpu);
 void pmu_post_el_change(ARMCPU *cpu, void *ignored);
 
 /*
@@ -3615,6 +3622,13 @@ void arm_register_pre_el_change_hook(ARMCPU *cpu, ARMELChangeHookFn *hook,
  */
 void arm_register_el_change_hook(ARMCPU *cpu, ARMELChangeHookFn *hook, void
         *opaque);
+
+/**
+ * arm_unregister_el_change_hook:
+ * unregister all EL change hook functions.  Generally called during
+ * unrealize'ing leg
+ */
+void arm_unregister_el_change_hooks(ARMCPU *cpu);
 
 /**
  * arm_rebuild_hflags:
