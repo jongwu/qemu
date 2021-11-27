@@ -169,6 +169,7 @@ struct VirtMachineState {
     DeviceState *gic;
     DeviceState *acpi_dev;
     Notifier powerdown_notifier;
+    NotifierList cpuhp_notifiers;
     PCIBus *bus;
     char *oem_id;
     char *oem_table_id;
