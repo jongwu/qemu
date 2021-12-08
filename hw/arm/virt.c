@@ -1933,6 +1933,7 @@ static void virt_cpu_set_properties(Object *cpuobj, const CPUArchId *cpu_slot)
  */
 static void virt_cpu_post_init(VirtMachineState *vms, MemoryRegion *sysmem)
 {
+    CPUArchIdList *possible_cpus = vms->parent.possible_cpus;
     int max_cpus = MACHINE(vms)->smp.max_cpus;
     bool aarch64, pmu, steal_time;
     CPUState *cpu;
@@ -1965,7 +1966,8 @@ static void virt_cpu_post_init(VirtMachineState *vms, MemoryRegion *sysmem)
             memory_region_add_subregion(sysmem, pvtime_reg_base, pvtime);
         }
 
-        CPU_FOREACH(cpu) {
+	for (int n = 0; n < possible_cpus->len; n++) {
+             cpu = qemu_get_possible_cpu(n);
             if (pmu) {
                 assert(arm_feature(&ARM_CPU(cpu)->env, ARM_FEATURE_PMU));
                 if (kvm_irqchip_in_kernel()) {
