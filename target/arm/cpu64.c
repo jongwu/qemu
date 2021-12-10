@@ -895,7 +895,6 @@ static void aarch64_cpu_class_init(ObjectClass *oc, void *data)
 {
     CPUClass *cc = CPU_CLASS(oc);
     DeviceClass *dc = DEVICE_CLASS(oc);
-    CPUState *cs = CPU(oc);
 
     dc->user_creatable = true;
     cc->gdb_read_register = aarch64_cpu_gdb_read_register;
@@ -909,11 +908,6 @@ static void aarch64_cpu_class_init(ObjectClass *oc, void *data)
     object_class_property_set_description(oc, "aarch64",
                                           "Set on/off to enable/disable aarch64 "
                                           "execution state ");
-    /*
-     * we start every ARM64 vcpu as disabled possible vcpu. It needs to be
-     * enabled explicitly
-     */
-    cs->disabled = true;
 }
 
 static void aarch64_cpu_instance_init(Object *obj)
@@ -924,6 +918,15 @@ static void aarch64_cpu_instance_init(Object *obj)
     arm_cpu_post_init(obj);
 }
 
+static void aarch64_cpu_initfn(Object *obj)
+{
+    CPUState *cs = CPU(obj);
+    /*
+     * we start every ARM64 vcpu as disabled possible vcpu. It needs to be
+     * enabled explicitly
+     */
+    cs->disabled = true;
+}
 static void cpu_register_class_init(ObjectClass *oc, void *data)
 {
     ARMCPUClass *acc = ARM_CPU_CLASS(oc);
@@ -952,6 +955,7 @@ static const TypeInfo aarch64_cpu_type_info = {
     .parent = TYPE_ARM_CPU,
     .instance_size = sizeof(ARMCPU),
     .instance_finalize = aarch64_cpu_finalizefn,
+    .instance_init = aarch64_cpu_initfn,
     .abstract = true,
     .class_size = sizeof(AArch64CPUClass),
     .class_init = aarch64_cpu_class_init,
